@@ -1,0 +1,23 @@
+# Use the official Apache Spark image as the base.
+FROM apache/spark:3.5.2
+
+# Install pip
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Install the Python libraries used by the streaming job and model.
+RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org \
+    pandas \
+    numpy \
+    pyarrow \
+    scikit-learn \
+    psycopg2-binary
+
+RUN mkdir -p /tmp/.ivy2 /home/spark \
+    && chown -R spark:spark /tmp/.ivy2 /home/spark
+
+# Switch back to Spark user
+USER spark
